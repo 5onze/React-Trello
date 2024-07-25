@@ -23,11 +23,29 @@ function TodoItem({ item }: TodoItemProps) {
     setTodoList(newList);
   };
 
+  const toggleItemCompletion = () => {
+    const newList = replaceItemAtIndex(todoList, index, {
+      ...item,
+      isComplete: !item.isComplete,
+    });
+    setTodoList(newList);
+    console.log(newList);
+  };
+
+  const deleteItem = () => {
+    const newList = removeItemAtIndex(todoList, index);
+    setTodoList(newList);
+  };
+
   return (
     <div>
       <input type="text" value={item.text} onChange={editItemText} />
-      {/* {<input type="checkbox" value={} onChange={} />
-    <button onClick={}>X</button>} */}
+      <input
+        type="checkbox"
+        checked={item.isComplete}
+        onChange={toggleItemCompletion}
+      />
+      <button onClick={deleteItem}>X</button>
     </div>
   );
 }
@@ -38,6 +56,10 @@ function replaceItemAtIndex(
   newValue: TodoProps,
 ) {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)];
+}
+
+function removeItemAtIndex(arr: TodoProps[], index: number) {
+  return [...arr.slice(0, index), ...arr.slice(index + 1)];
 }
 
 export default TodoItem;

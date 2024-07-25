@@ -10,11 +10,9 @@ function TodoList() {
   return (
     <>
       <TodoItemCreator />
-      <p>
-        {todoList.map((todoItem) => (
-          <TodoItem key={todoItem.id} item={todoItem} />
-        ))}
-      </p>
+      {todoList.map((todoItem) => (
+        <TodoItem key={todoItem.id} item={todoItem} />
+      ))}
     </>
   );
 }
