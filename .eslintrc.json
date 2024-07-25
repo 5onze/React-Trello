@@ -1,0 +1,36 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:prettier/recommended" // Prettier와 ESLint를 함께 사용하기 위한 설정
+  ],
+  // TypeScript 코드를 분석하기 위한 파서
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": ["./tsconfig.json"]
+  },
+  // ESLint에 추가적인 기능을 제공하는 플러그인들을 명시
+  "plugins": ["react", "@typescript-eslint", "react-hooks", "prettier"],
+  // ESLint가 파일을 무시하도록 하는 패턴.
+  "ignorePatterns": ["pulbic/", "node_modules/"],
+  "rules": {
+    "prettier/prettier": ["error", { "endOfLine": "auto" }], // Delete `CR` eslint(prettier/prettier) 에러 해결법 - prettier의 개행 방식을 auto로 변경
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off"
+  }
+}
