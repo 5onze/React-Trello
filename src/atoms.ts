@@ -1,4 +1,5 @@
-import { atom, selector } from 'recoil';
+import { atom, DefaultValue, selector } from 'recoil';
+import type { AtomEffect } from 'recoil';
 
 export interface TodoProps {
   id: number;
@@ -6,9 +7,24 @@ export interface TodoProps {
   isComplete: boolean;
 }
 
+const localStorageEffect: (key: string) => AtomEffect<any> =
+  (key) =>
+  ({ setSelf, onSet }) => {
+    const savedValue = localStorage.getItem(key);
+    if (savedValue !== null) {
+      setSelf(JSON.parse(savedValue));
+    }
+    onSet((newValue, _, isReset) => {
+      isReset
+        ? localStorage.removeItem(key)
+        : localStorage.setItem(key, JSON.stringify(newValue));
+    });
+  };
+
 export const todoListState = atom<TodoProps[]>({
   key: 'todoListState',
   default: [],
+  effects: [localStorageEffect('todoList')],
 });
 
 export const todoListFilterState = atom({

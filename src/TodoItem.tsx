@@ -8,7 +8,6 @@ interface TodoItemProps {
 }
 
 function TodoItem({ item }: TodoItemProps) {
-  const { id, text, isComplete } = item;
   const [todoList, setTodoList] = useRecoilState(todoListState);
   const index = todoList.findIndex((listItem) => listItem === item);
 
@@ -29,7 +28,6 @@ function TodoItem({ item }: TodoItemProps) {
       isComplete: !item.isComplete,
     });
     setTodoList(newList);
-    console.log(newList);
   };
 
   const deleteItem = () => {
@@ -38,7 +36,7 @@ function TodoItem({ item }: TodoItemProps) {
   };
 
   return (
-    <div>
+    <li>
       <input type="text" value={item.text} onChange={editItemText} />
       <input
         type="checkbox"
@@ -46,7 +44,7 @@ function TodoItem({ item }: TodoItemProps) {
         onChange={toggleItemCompletion}
       />
       <button onClick={deleteItem}>X</button>
-    </div>
+    </li>
   );
 }
 

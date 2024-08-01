@@ -7,14 +7,18 @@ function TodoItemCreator() {
   const setTodoList = useSetRecoilState(todoListState);
 
   const addItem = () => {
-    setTodoList((oldTodoList) => [
-      ...oldTodoList,
-      {
-        id: getId(),
-        text: inputValue,
-        isComplete: false,
-      },
-    ]);
+    if (inputValue.length === 0) {
+      alert(`내용을 작성하세요`);
+    } else {
+      setTodoList((oldTodoList) => [
+        ...oldTodoList,
+        {
+          id: Date.now(),
+          text: inputValue,
+          isComplete: false,
+        },
+      ]);
+    }
     setInputValue('');
   };
 
@@ -25,18 +29,24 @@ function TodoItemCreator() {
     setInputValue(value);
   };
 
+  const AddKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      addItem();
+    }
+  };
+
   return (
     <div>
-      <input type="text" value={inputValue} onChange={onChange} />
+      <input
+        type="text"
+        value={inputValue}
+        onChange={onChange}
+        placeholder="Write a to do"
+        onKeyDown={AddKey}
+      />
       <button onClick={addItem}>Add</button>
     </div>
   );
-}
-
-// 고유한 Id 생성을 위한 유틸리티
-let id = 0;
-function getId() {
-  return id++;
 }
 
 export default TodoItemCreator;
