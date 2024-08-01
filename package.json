@@ -9,8 +9,10 @@
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
+    "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^18.0.0",
     "react": "^18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
     "recoil": "^0.7.7",
@@ -52,7 +54,7 @@
     "eslint-plugin-react": "^7.34.3",
     "globals": "^15.8.0",
     "prettier": "^3.3.2",
-    "styled-components": "^6.1.11",
+    "styled-components": "^6.1.12",
     "typescript-eslint": "^7.16.0"
   }
 }

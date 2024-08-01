@@ -5,6 +5,16 @@ import TodoItemCreator from './TodoItemCreator';
 import TodoItem from './TodoItem';
 import TodoListFilters from './TodoListFilters';
 import TodoListStats from './TodoListStats';
+import { Droppable } from 'react-beautiful-dnd';
+import styled from 'styled-components';
+
+const Board = styled.div`
+  padding: 20px 10px;
+  padding-top: 30px;
+  background-color: lightgreen;
+  border-radius: 5px;
+  min-height: 200px;
+`;
 
 function TodoList() {
   const todoList = useRecoilValue(filteredTodoListState);
@@ -20,16 +30,23 @@ function TodoList() {
   }, [setTodoList]);
 
   return (
-    <>
+    <div>
       <TodoListStats />
       <TodoListFilters />
       <TodoItemCreator />
-      <ul>
-        {todoList?.map((todoItem) => (
-          <TodoItem key={todoItem.id} item={todoItem} />
-        ))}
-      </ul>
-    </>
+      <div>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <Board ref={provided.innerRef} {...provided.droppableProps}>
+              {todoList?.map((todoItem, index) => (
+                <TodoItem key={todoItem.id} item={todoItem} index={index} />
+              ))}
+              {provided.placeholder}
+            </Board>
+          )}
+        </Droppable>
+      </div>
+    </div>
   );
 }
 
