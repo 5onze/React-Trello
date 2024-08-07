@@ -7,6 +7,19 @@ export interface TodoProps {
   isComplete: boolean;
 }
 
+export interface BoardProps {
+  [key: string]: string[];
+}
+
+export const boardState = atom<BoardProps>({
+  key: 'board',
+  default: {
+    Todo: ['a', 'b'],
+    Doing: ['c', 'd'],
+    Done: ['e', 'f'],
+  },
+});
+
 const localStorageEffect: (key: string) => AtomEffect<any> =
   (key) =>
   ({ setSelf, onSet }) => {

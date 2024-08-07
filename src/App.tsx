@@ -1,13 +1,13 @@
 import React from 'react';
-import TodoList from './TodoList';
+import Board from './Board';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import { useSetRecoilState } from 'recoil';
-import { todoListState } from './atoms';
+import { useRecoilValue } from 'recoil';
+import { boardState } from './atoms';
 
 const Wrapper = styled.div`
   display: flex;
-  max-width: 480px;
+  max-width: 680px;
   width: 100%;
   margin: 0 auto;
   justify-content: center;
@@ -18,15 +18,15 @@ const Wrapper = styled.div`
 const Boards = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(1, 1fr);
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
 `;
 
 function App() {
-  const setTodoList = useSetRecoilState(todoListState);
-
+  const boardList = useRecoilValue(boardState);
   const onDragEnd = ({ source, destination }: DropResult) => {
     if (!destination) return;
-    setTodoList((oldList) => {
+    /*  setTodoList((oldList) => {
       const result = [...oldList];
       // 1) Delete item on source.index
       const [removed] = result.splice(source.index, 1);
@@ -37,13 +37,19 @@ function App() {
         result,
       );
       return result;
-    });
+    }); */
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
         <Boards>
-          <TodoList />
+          {Object.keys(boardList).map((boardId) => (
+            <Board
+              key={boardId}
+              boardId={boardId}
+              boardList={boardList[boardId]}
+            />
+          ))}
         </Boards>
       </Wrapper>
     </DragDropContext>
