@@ -2,13 +2,13 @@ import React from 'react';
 import Board from './Board';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { boardState } from './atoms';
 
 const Wrapper = styled.div`
   display: flex;
   max-width: 680px;
-  width: 100%;
+  width: 100vw;
   margin: 0 auto;
   justify-content: center;
   align-items: center;
@@ -16,28 +16,26 @@ const Wrapper = styled.div`
 `;
 
 const Boards = styled.div`
-  display: grid;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   width: 100%;
   gap: 10px;
-  grid-template-columns: repeat(3, 1fr);
 `;
 
 function App() {
-  const boardList = useRecoilValue(boardState);
-  const onDragEnd = ({ source, destination }: DropResult) => {
+  const [boardList, setBoardList] = useRecoilState(boardState);
+  const onDragEnd = ({ source, destination, draggableId }: DropResult) => {
     if (!destination) return;
-    /*  setTodoList((oldList) => {
-      const result = [...oldList];
-      // 1) Delete item on source.index
-      const [removed] = result.splice(source.index, 1);
-      // 2) Put back the item on the destination.index
-      result.splice(destination?.index, 0, removed);
-      console.log(
-        `Delete item ${source.index}, Put back on ${destination?.index}, Result :`,
-        result,
-      );
-      return result;
-    }); */
+    if (destination?.droppableId === source.droppableId) {
+      // 같은 보드에서 투두 이동
+      setBoardList((allBoards) => {
+        const result = [...allBoards[source.droppableId]]; // 해당 보드의 모든 투두 가져오기
+        result.splice(source.index, 1); // 선택한 투두를 index에서 지우기
+        result.splice(destination?.index, 0, draggableId); // draggableId를 마지막에 추가
+        return { ...allBoards, [source.droppableId]: result };
+      });
+    }
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>

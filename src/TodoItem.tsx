@@ -6,7 +6,7 @@ const Card = styled.div`
   border-radius: 5px;
   margin-bottom: 5px;
   padding: 10px 10px;
-  background-color: lightblue;
+  background-color: lightyellow;
 `;
 
 interface TodoItemProps {

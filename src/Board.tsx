@@ -4,11 +4,19 @@ import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
+  width: 300px;
   padding: 20px 10px;
-  padding-top: 30px;
-  background-color: lightgreen;
+  padding-top: 10px;
+  background-color: lightblue;
   border-radius: 5px;
-  min-height: 200px;
+  min-height: 300px;
+`;
+
+const Title = styled.h2`
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 18px;
 `;
 
 interface BoardProps {
@@ -19,7 +27,7 @@ interface BoardProps {
 function Board({ boardId, boardList }: BoardProps) {
   return (
     <div>
-      <title>{boardId}</title>
+      <Title>{boardId}</Title>
       <Droppable droppableId={boardId}>
         {(provided) => (
           <Wrapper ref={provided.innerRef} {...provided.droppableProps}>
