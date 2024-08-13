@@ -13,10 +13,7 @@ export interface BoardProps {
 export const boardState = atom<BoardProps>({
   key: 'board',
   default: {
-    Todo: [
-      { text: 'hello', id: 1 },
-      { text: 'todo', id: 2 },
-    ],
+    Todo: [],
     Doing: [],
     Done: [],
   },

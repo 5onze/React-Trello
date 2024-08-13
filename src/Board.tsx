@@ -3,7 +3,8 @@ import TodoItem from './TodoItem';
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { TodoProps } from './atoms';
+import { boardState, TodoProps } from './atoms';
+import { useSetRecoilState } from 'recoil';
 
 const Wrapper = styled.div`
   width: 300px;
@@ -58,9 +59,20 @@ interface FormProps {
 }
 
 function Board({ boardId, boardList }: BoardProps) {
+  const setTodos = useSetRecoilState(boardState);
   const { register, setValue, handleSubmit } = useForm<FormProps>();
-  const onValid = (data: FormProps) => {
-    console.log(data);
+  const onValid = ({ todo }: FormProps) => {
+    const newTodo = {
+      id: Date.now(),
+      text: todo,
+    };
+    console.log(todo, newTodo);
+    setTodos((allboards) => {
+      return {
+        ...allboards,
+        [boardId]: [...allboards[boardId], newTodo],
+      };
+    });
     setValue('todo', '');
   };
   return (
