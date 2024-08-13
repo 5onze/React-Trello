@@ -12,13 +12,14 @@ const Card = styled.div<{ isDragging: boolean }>`
 `;
 
 interface TodoItemProps {
-  item: string;
+  todoText: string;
+  todoId: number;
   index: number;
 }
 
-function TodoItem({ item, index }: TodoItemProps) {
+function TodoItem({ todoText, todoId, index }: TodoItemProps) {
   return (
-    <Draggable key={item} draggableId={item} index={index}>
+    <Draggable key={todoId} draggableId={todoId + ''} index={index}>
       {(provided, snapshot) => (
         <Card
           ref={provided.innerRef}
@@ -26,7 +27,7 @@ function TodoItem({ item, index }: TodoItemProps) {
           {...provided.dragHandleProps}
           {...provided.draggableProps}
         >
-          {item}
+          {todoText}
         </Card>
       )}
     </Draggable>

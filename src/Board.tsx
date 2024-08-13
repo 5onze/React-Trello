@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import TodoItem from './TodoItem';
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+import { useForm } from 'react-hook-form';
+import { TodoProps } from './atoms';
 
 const Wrapper = styled.div`
   width: 300px;
@@ -34,9 +36,16 @@ const Area = styled.div<AreaProps>`
   padding: 20px;
 `;
 
+const Form = styled.form`
+  width: 100%;
+  input {
+    width: 100%;
+  }
+`;
+
 interface BoardProps {
   boardId: string;
-  boardList: string[];
+  boardList: TodoProps[];
 }
 
 interface AreaProps {
@@ -44,10 +53,26 @@ interface AreaProps {
   isDraggingFromThis: boolean;
 }
 
+interface FormProps {
+  todo: string;
+}
+
 function Board({ boardId, boardList }: BoardProps) {
+  const { register, setValue, handleSubmit } = useForm<FormProps>();
+  const onValid = (data: FormProps) => {
+    console.log(data);
+    setValue('todo', '');
+  };
   return (
     <Wrapper>
       <Title>{boardId}</Title>
+      <Form onSubmit={handleSubmit(onValid)}>
+        <input
+          {...register('todo', { required: true })}
+          type="text"
+          placeholder={`Add task on ${boardId}`}
+        />
+      </Form>
       <Droppable droppableId={boardId}>
         {(provided, snapshot) => (
           <Area
@@ -57,7 +82,12 @@ function Board({ boardId, boardList }: BoardProps) {
             {...provided.droppableProps}
           >
             {boardList.map((todoItem, index) => (
-              <TodoItem key={todoItem} index={index} item={todoItem} />
+              <TodoItem
+                key={todoItem.id}
+                index={index}
+                todoText={todoItem.text}
+                todoId={todoItem.id}
+              />
             ))}
             {provided.placeholder}
           </Area>
