@@ -10,6 +10,9 @@ const Wrapper = styled.div`
   background-color: lightblue;
   border-radius: 5px;
   min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 `;
 
 const Title = styled.h2`
@@ -19,26 +22,48 @@ const Title = styled.h2`
   font-size: 18px;
 `;
 
+const Area = styled.div<AreaProps>`
+  background-color: ${(props) =>
+    props.isDraggingOver
+      ? 'pink'
+      : props.isDraggingFromThis
+        ? '#fd688d'
+        : '#c1a4db'};
+  flex-grow: 1;
+  transition: background-color 0.3s ease-in-out;
+  padding: 20px;
+`;
+
 interface BoardProps {
   boardId: string;
   boardList: string[];
 }
 
+interface AreaProps {
+  isDraggingOver: boolean;
+  isDraggingFromThis: boolean;
+}
+
 function Board({ boardId, boardList }: BoardProps) {
   return (
-    <div>
+    <Wrapper>
       <Title>{boardId}</Title>
       <Droppable droppableId={boardId}>
-        {(provided) => (
-          <Wrapper ref={provided.innerRef} {...provided.droppableProps}>
+        {(provided, snapshot) => (
+          <Area
+            ref={provided.innerRef}
+            isDraggingOver={snapshot.isDraggingOver}
+            isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
+            {...provided.droppableProps}
+          >
             {boardList.map((todoItem, index) => (
               <TodoItem key={todoItem} index={index} item={todoItem} />
             ))}
             {provided.placeholder}
-          </Wrapper>
+          </Area>
         )}
       </Droppable>
-    </div>
+    </Wrapper>
   );
 }
 
