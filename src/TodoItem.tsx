@@ -15,7 +15,6 @@ interface TodoItemProps {
 }
 
 function TodoItem({ item, index }: TodoItemProps) {
-  console.log(item);
   return (
     <Draggable key={item} draggableId={item} index={index}>
       {(provided) => (
