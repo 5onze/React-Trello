@@ -10,6 +10,7 @@ export interface BoardProps {
   [key: string]: TodoProps[];
 }
 
+// 보드와 모든 투두
 export const boardState = atom<BoardProps>({
   key: 'board',
   default: {
@@ -17,6 +18,18 @@ export const boardState = atom<BoardProps>({
     Doing: [],
     Done: [],
   },
+});
+
+// 투두 업데이트
+export const todoState = atom({
+  key: 'todoText',
+  default: '',
+});
+
+// 투두 수정
+export const editTodoState = atom({
+  key: 'todoEdit',
+  default: false,
 });
 
 const localStorageEffect: (key: string) => AtomEffect<any> =

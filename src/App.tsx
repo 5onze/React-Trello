@@ -7,7 +7,7 @@ import { boardState } from './atoms';
 
 const Wrapper = styled.div`
   display: flex;
-  max-width: 680px;
+  max-width: 920px;
   width: 100vw;
   margin: 0 auto;
   justify-content: center;
@@ -27,7 +27,6 @@ function App() {
   const [boardList, setBoardList] = useRecoilState(boardState);
   const onDragEnd = (info: DropResult) => {
     const { source, destination, draggableId } = info;
-    console.log(info);
     if (!destination) return;
     // 같은 보드에서 투두 이동
     if (destination?.droppableId === source.droppableId) {

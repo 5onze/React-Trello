@@ -59,6 +59,10 @@ a {
   text-decoration:none;
   color:inherit;
 }
+button {
+	border: 0;
+	background-color: transparent;
+}
 `;
 
 export default GlobalStyle;

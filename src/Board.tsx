@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import TodoItem from './TodoItem';
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { boardState, TodoProps } from './atoms';
-import { useSetRecoilState } from 'recoil';
+import { boardState, editTodoState, TodoProps, todoState } from './atoms';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 const Wrapper = styled.div`
   width: 300px;
@@ -59,14 +59,16 @@ interface FormProps {
 }
 
 function Board({ boardId, boardList }: BoardProps) {
-  const setTodos = useSetRecoilState(boardState);
+  const [todos, setTodos] = useRecoilState(boardState);
+  const [onInputSpan, setOnInputSpan] = useRecoilState(todoState);
+  const [isEditing, setEditing] = useRecoilState(editTodoState);
   const { register, setValue, handleSubmit } = useForm<FormProps>();
+  // 새로운 투두 추가
   const onValid = ({ todo }: FormProps) => {
     const newTodo = {
       id: Date.now(),
       text: todo,
     };
-    console.log(todo, newTodo);
     setTodos((allboards) => {
       return {
         ...allboards,
@@ -74,6 +76,32 @@ function Board({ boardId, boardList }: BoardProps) {
       };
     });
     setValue('todo', '');
+  };
+  // 투두 삭제
+  const removeTodosHandler = (todoId: number) => {
+    setTodos((todos) => {
+      const copyBoard = boardList.filter((name) => name.id !== todoId);
+      return {
+        ...todos,
+        [boardId]: copyBoard,
+      };
+    });
+  };
+  // TODO: 투두 수정
+  const editedTodosHandler = (todoId: number) => {
+    setTodos((allTodo) => {
+      const edited = allTodo[boardId].map((todo) => {
+        if (todo.id === todoId) {
+          return {
+            ...todo,
+            text: onInputSpan,
+          };
+        }
+        return todo;
+      });
+      return { ...allTodo, [boardId]: edited };
+    });
+    setEditing(false);
   };
   return (
     <Wrapper>
@@ -99,6 +127,8 @@ function Board({ boardId, boardList }: BoardProps) {
                 index={index}
                 todoText={todoItem.text}
                 todoId={todoItem.id}
+                removeTodos={removeTodosHandler}
+                editedTodos={editedTodosHandler}
               />
             ))}
             {provided.placeholder}
