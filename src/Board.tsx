@@ -3,7 +3,7 @@ import TodoItem from './TodoItem';
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { boardState, editTodoState, TodoProps, todoState } from './atoms';
+import { boardState, editTodoState, TodoProps } from './atoms';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 const Wrapper = styled.div`
@@ -45,8 +45,10 @@ const Form = styled.form`
 `;
 
 interface BoardProps {
-  boardId: string;
-  boardList: TodoProps[];
+  boardId: number;
+  boardIndex: number;
+  boardName: string;
+  items: TodoProps[];
 }
 
 interface AreaProps {
@@ -58,62 +60,79 @@ interface FormProps {
   todo: string;
 }
 
-function Board({ boardId, boardList }: BoardProps) {
+function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   const [todos, setTodos] = useRecoilState(boardState);
-  const [onInputSpan, setOnInputSpan] = useRecoilState(todoState);
   const [isEditing, setEditing] = useRecoilState(editTodoState);
   const { register, setValue, handleSubmit } = useForm<FormProps>();
+
   // 새로운 투두 추가
-  const onValid = ({ todo }: FormProps) => {
+  const onAddTodo = ({ todo }: FormProps) => {
     const newTodo = {
       id: Date.now(),
       text: todo,
     };
     setTodos((allboards) => {
-      return {
-        ...allboards,
-        [boardId]: [...allboards[boardId], newTodo],
-      };
+      // 보드 전체는 배열[], 각자의 보드는 객체{}, todoitems 는 배열[]
+      const nowBoard = allboards[boardIndex]; // "Todo" Array
+      const newItems = [...nowBoard.items, newTodo]; // 기존 item 과 새로운 item
+      const newBoard = { ...nowBoard, items: newItems }; // newItems을 담은 새로운 "Todo" Array
+
+      // 수정전 보드("Todo")를 삭제하고 수정된 보드를 넣음
+      const newBoards = [
+        ...allboards.slice(0, boardIndex),
+        newBoard,
+        ...allboards.slice(boardIndex + 1),
+      ];
+
+      // [...allboards, newBoard] 는 새로운 보드를 추가한다.
+      return newBoards;
     });
     setValue('todo', '');
   };
-  // 투두 삭제
+
+  // TODO: 투두 삭제
   const removeTodosHandler = (todoId: number) => {
     setTodos((todos) => {
-      const copyBoard = boardList.filter((name) => name.id !== todoId);
-      return {
-        ...todos,
-        [boardId]: copyBoard,
-      };
+      const copyBoard = todos[boardIndex]; // "Todo" 보드 복사
+      const copyItems = [...copyBoard.items]; // 보드의 items {} 복사
+      const filteredNewItems = copyItems.filter((name) => name.id !== todoId); // 삭제하고 난 items {}
+      const newBoard = { ...copyBoard, items: filteredNewItems }; // 새로운 아이템을 가진 해당 보드
+
+      console.log(newBoard);
+
+      return [
+        ...todos.slice(0, boardIndex),
+        newBoard,
+        ...todos.slice(boardIndex + 1),
+      ];
     });
   };
   // TODO: 투두 수정
-  const editedTodosHandler = (todoId: number) => {
+  /*  const editedTodos = (todoId: number, inputValue: string) => {
     setTodos((allTodo) => {
       const edited = allTodo[boardId].map((todo) => {
         if (todo.id === todoId) {
           return {
             ...todo,
-            text: onInputSpan,
+            text: inputValue,
           };
         }
         return todo;
       });
       return { ...allTodo, [boardId]: edited };
     });
-    setEditing(false);
-  };
+  }; */
   return (
     <Wrapper>
-      <Title>{boardId}</Title>
-      <Form onSubmit={handleSubmit(onValid)}>
+      <Title>{boardName}</Title>
+      <Form onSubmit={handleSubmit(onAddTodo)}>
         <input
           {...register('todo', { required: true })}
           type="text"
-          placeholder={`Add task on ${boardId}`}
+          placeholder={`Add task on ${boardName}`}
         />
       </Form>
-      <Droppable droppableId={boardId}>
+      <Droppable droppableId={boardId + ''}>
         {(provided, snapshot) => (
           <Area
             ref={provided.innerRef}
@@ -121,14 +140,13 @@ function Board({ boardId, boardList }: BoardProps) {
             isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
             {...provided.droppableProps}
           >
-            {boardList.map((todoItem, index) => (
+            {items?.map((todoItem, index) => (
               <TodoItem
                 key={todoItem.id}
                 index={index}
                 todoText={todoItem.text}
                 todoId={todoItem.id}
                 removeTodos={removeTodosHandler}
-                editedTodos={editedTodosHandler}
               />
             ))}
             {provided.placeholder}

@@ -7,21 +7,40 @@ export interface TodoProps {
 }
 
 export interface BoardProps {
-  [key: string]: TodoProps[];
+  id: number;
+  items: TodoProps[];
+  boardName: string;
 }
 
 // 보드와 모든 투두
-export const boardState = atom<BoardProps>({
+export const boardState = atom<BoardProps[]>({
   key: 'board',
-  default: {
-    Todo: [],
-    Doing: [],
-    Done: [],
-  },
+  default: [
+    {
+      id: 0,
+      boardName: 'Todo',
+      items: [{ id: 3, text: '새로운 할일' }],
+    },
+    {
+      id: 1,
+      boardName: 'Doing',
+      items: [],
+    },
+    {
+      id: 2,
+      boardName: 'Done',
+      items: [{ id: 6, text: '투두 삭제 구현' }],
+    },
+  ],
 });
 
-// 투두 업데이트
-export const todoState = atom({
+// 투두 아이디
+export const todoIdState = atom({
+  key: 'todoId',
+  default: null,
+});
+// 투두 텍스트
+export const todoTextState = atom({
   key: 'todoText',
   default: '',
 });

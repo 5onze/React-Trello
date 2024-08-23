@@ -25,31 +25,48 @@ const Boards = styled.div`
 
 function App() {
   const [boardList, setBoardList] = useRecoilState(boardState);
+
   const onDragEnd = (info: DropResult) => {
     const { source, destination, draggableId } = info;
+
     if (!destination) return;
+
     // 같은 보드에서 투두 이동
     if (destination?.droppableId === source.droppableId) {
       setBoardList((allBoards) => {
-        const result = [...allBoards[source.droppableId]]; // 해당 보드의 모든 투두 가져오기
-        const boardObj = result[source.index]; // Object 복사
-        result.splice(source.index, 1); // 선택한 투두를 index에서 지우기
-        result.splice(destination?.index, 0, boardObj); // draggableId를 마지막에 추가
-        return { ...allBoards, [source.droppableId]: result };
+        // source.droppableId 앞에 " + "는 number 로 교체하기 위해서 사용
+        const boardIndex = allBoards.findIndex(
+          (board) => board.id === +source.droppableId,
+        );
+        const itemsCopy = [...allBoards[boardIndex].items]; // 해당 보드의 모든 투두 가져오기
+        const todoItem = itemsCopy[source.index]; // Object 복사
+        itemsCopy.splice(source.index, 1); // 선택한 투두를 index에서 지우기
+        itemsCopy.splice(destination?.index, 0, todoItem); // draggableId를 마지막에 추가
+        return { ...allBoards, items: itemsCopy };
       });
     }
     // 다른 보드에서 이동
     if (destination?.droppableId !== source.droppableId) {
       setBoardList((allBoards) => {
-        const sourceResult = [...allBoards[source.droppableId]];
-        const destinationResult = [...allBoards[destination.droppableId]];
-        const boardObj = sourceResult[source.index];
-        sourceResult.splice(source.index, 1);
-        destinationResult.splice(destination?.index, 0, boardObj);
+        // findIndex
+        const srcBoardIndex = allBoards.findIndex(
+          (board) => board.id === +source.droppableId,
+        );
+        const destBaordIndex = allBoards.findIndex(
+          (board) => board.id === +destination.droppableId,
+        );
+        // copy
+        const srcItemsCopy = [...allBoards[srcBoardIndex].items];
+        const destItemsCopy = [...allBoards[destBaordIndex].items];
+        const todoItem = srcItemsCopy[source.index];
+
+        srcItemsCopy.splice(source.index, 1);
+        destItemsCopy.splice(destination?.index, 0, todoItem);
+
         return {
           ...allBoards,
-          [source.droppableId]: sourceResult,
-          [destination.droppableId]: destinationResult,
+          [source.droppableId]: srcItemsCopy,
+          [destination.droppableId]: destItemsCopy,
         };
       });
     }
@@ -58,11 +75,13 @@ function App() {
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
         <Boards>
-          {Object.keys(boardList).map((boardId) => (
+          {boardList?.map((board, index) => (
             <Board
-              key={boardId}
-              boardId={boardId}
-              boardList={boardList[boardId]}
+              key={board.id}
+              boardIndex={index}
+              boardId={board.id}
+              items={board.items}
+              boardName={board.boardName}
             />
           ))}
         </Boards>
