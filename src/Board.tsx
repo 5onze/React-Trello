@@ -3,7 +3,7 @@ import TodoItem from './TodoItem';
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { boardState, editTodoState, TodoProps } from './atoms';
+import { boardState, TodoProps } from './atoms';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 const Wrapper = styled.div`
@@ -62,7 +62,6 @@ interface FormProps {
 
 function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   const [todos, setTodos] = useRecoilState(boardState);
-  const [isEditing, setEditing] = useRecoilState(editTodoState);
   const { register, setValue, handleSubmit } = useForm<FormProps>();
 
   // 새로운 투두 추가
@@ -73,11 +72,11 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
     };
     setTodos((allboards) => {
       // 보드 전체는 배열[], 각자의 보드는 객체{}, todoitems 는 배열[]
-      const nowBoard = allboards[boardIndex]; // "Todo" Array
-      const newItems = [...nowBoard.items, newTodo]; // 기존 item 과 새로운 item
-      const newBoard = { ...nowBoard, items: newItems }; // newItems을 담은 새로운 "Todo" Array
+      const copyBoard = allboards[boardIndex]; // "Todo" Array
+      const newItems = [...copyBoard.items, newTodo]; // 기존 item 과 새로운 item
+      const newBoard = { ...copyBoard, items: newItems }; // newItems을 담은 새로운 "Todo" Array
 
-      // 수정전 보드("Todo")를 삭제하고 수정된 보드를 넣음
+      // todo의 앞뒤 index를 복사하고 중간에 수정된 todo를 넣음
       const newBoards = [
         ...allboards.slice(0, boardIndex),
         newBoard,
@@ -98,8 +97,6 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
       const filteredNewItems = copyItems.filter((name) => name.id !== todoId); // 삭제하고 난 items {}
       const newBoard = { ...copyBoard, items: filteredNewItems }; // 새로운 아이템을 가진 해당 보드
 
-      console.log(newBoard);
-
       return [
         ...todos.slice(0, boardIndex),
         newBoard,
@@ -107,21 +104,7 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
       ];
     });
   };
-  // TODO: 투두 수정
-  /*  const editedTodos = (todoId: number, inputValue: string) => {
-    setTodos((allTodo) => {
-      const edited = allTodo[boardId].map((todo) => {
-        if (todo.id === todoId) {
-          return {
-            ...todo,
-            text: inputValue,
-          };
-        }
-        return todo;
-      });
-      return { ...allTodo, [boardId]: edited };
-    });
-  }; */
+
   return (
     <Wrapper>
       <Title>{boardName}</Title>
@@ -147,6 +130,7 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
                 todoText={todoItem.text}
                 todoId={todoItem.id}
                 removeTodos={removeTodosHandler}
+                boardIndex={boardIndex}
               />
             ))}
             {provided.placeholder}

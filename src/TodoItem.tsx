@@ -1,19 +1,13 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import {
-  boardState,
-  editTodoState,
-  todoIdState,
-  TodoProps,
-  todoTextState,
-} from './atoms';
+import { boardState } from './atoms';
 import { useForm } from 'react-hook-form';
 
 const Card = styled.div<{ isDragging: boolean; isEditMod: boolean }>`
   width: 100%;
-
+  margin-bottom: 5px;
   border-radius: 5px;
   padding: 10px;
   background-color: ${(props) => (props.isDragging ? '#fbfd90' : '#ffffff')};
@@ -49,19 +43,23 @@ interface TodoItemProps {
   todoId: number;
   index: number;
   removeTodos(todoId: number): void;
+  boardIndex: number;
 }
 
 interface FormProps {
-  inputValue: string;
+  editedText: string;
 }
 
-function TodoItem({ todoText, todoId, index, removeTodos }: TodoItemProps) {
-  const [todos, setTodos] = useRecoilState(boardState);
-  const [isEditing, setEditing] = useRecoilState(editTodoState);
+function TodoItem({
+  todoText,
+  todoId,
+  index,
+  removeTodos,
+  boardIndex,
+}: TodoItemProps) {
+  const [boards, setBoards] = useRecoilState(boardState);
+  const [isEditing, setEditing] = useState(false);
 
-  // todoId, todoText state
-  const [editingTodoId, setEditingTodoId] = useRecoilState(todoIdState);
-  const [inputValue, setInputValue] = useRecoilState(todoTextState);
   // Form 이벤트
   const { register, setValue, handleSubmit } = useForm<FormProps>();
 
@@ -73,40 +71,52 @@ function TodoItem({ todoText, todoId, index, removeTodos }: TodoItemProps) {
   // 오류 : Cannot read properties of undefined (reading 'map')
 
   // form
-  /*  const editedTodos = ({ inputValue }: FormProps) => {
-    if (inputValue === '') {
+  const editedTodos = ({ editedText }: FormProps) => {
+    if (editedText === '') {
       return;
     }
-    setTodos((allTodo) => {
-      const edited = allTodo[index].map((todo) => {
-        if (todo.id === todoId) {
-          return {
-            ...todo,
-            text: inputValue,
-          };
-        }
-        return todo;
-      });
+    setBoards((allBoards) => {
+      // copy
+      const copyBoard = allBoards[boardIndex]; // 해당 보드
+      const copyItems = copyBoard.items; // 해당 보드의 모든 todo
+
+      // 수정한 todo
+      const newTodo = {
+        ...copyItems[index],
+        text: editedText,
+      };
+
+      // 수정전 todo를 삭제하고 수정된 새로운 todo를 담은 새로운 Todo items
+      const newItems = [
+        ...copyItems.slice(0, index),
+        newTodo,
+        ...copyItems.slice(index + 1),
+      ];
+
+      // 수정된 todos가 담긴 새로운 보드
+      const newBoard = { ...copyBoard, items: newItems };
+
+      // 수정된 new보드를 보드배열에 담음
+      const newBoards = [
+        ...allBoards.slice(0, boardIndex),
+        newBoard,
+        ...allBoards.slice(boardIndex + 1),
+      ];
+
       setEditing(false);
-      return { ...allTodo, [index]: edited };
+      return newBoards;
     });
-    setValue('inputValue', '');
-  }; */
-
-  /*  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setInputValue(e.target.value)
-          } */
-
-  const editedTodos = () => {};
+    setValue('editedText', '');
+  };
 
   // 템플릿
   const editingTemplate = (
     <form onSubmit={handleSubmit(editedTodos)}>
       <InputBox>
-        <input type="text" {...register('inputValue', { required: true })} />
+        <input type="text" {...register('editedText', { required: true })} />
       </InputBox>
       <div>
-        <Button type="button" onClick={() => setEditing(false)}>
+        <Button type="button" onClick={() => setEditing((prev) => !prev)}>
           취소
         </Button>
         <Button type="submit">저장</Button>
@@ -118,7 +128,7 @@ function TodoItem({ todoText, todoId, index, removeTodos }: TodoItemProps) {
     <div>
       <InputBox>{todoText}</InputBox>
       <div>
-        <Button onClick={() => setEditing(true)}>편집</Button>
+        <Button onClick={() => setEditing((prev) => !prev)}>편집</Button>
         <Button onClick={() => removeTodos(todoId)}>삭제</Button>
       </div>
     </div>

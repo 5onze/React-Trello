@@ -34,23 +34,6 @@ export const boardState = atom<BoardProps[]>({
   ],
 });
 
-// 투두 아이디
-export const todoIdState = atom({
-  key: 'todoId',
-  default: null,
-});
-// 투두 텍스트
-export const todoTextState = atom({
-  key: 'todoText',
-  default: '',
-});
-
-// 투두 수정
-export const editTodoState = atom({
-  key: 'todoEdit',
-  default: false,
-});
-
 const localStorageEffect: (key: string) => AtomEffect<any> =
   (key) =>
   ({ setSelf, onSet }) => {
@@ -69,9 +52,4 @@ export const todoListState = atom<TodoProps[]>({
   key: 'todoListState',
   default: [],
   effects: [localStorageEffect('todoList')],
-});
-
-export const todoListFilterState = atom({
-  key: 'todoListFilterState',
-  default: 'Show All',
 });

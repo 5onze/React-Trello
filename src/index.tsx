@@ -9,7 +9,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <RecoilRoot>
-    <GlobalStyle />
-    <App />
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <GlobalStyle />
+      <App />
+    </React.Suspense>
   </RecoilRoot>,
 );
