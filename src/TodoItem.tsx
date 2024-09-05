@@ -63,12 +63,8 @@ function TodoItem({
   // Form 이벤트
   const { register, setValue, handleSubmit } = useForm<FormProps>();
 
-  // TODO: 수정 후 저장하면 input value 반영되게 하기
-  // 투두 수정 구현하기
-
-  // https://velog.io/@hamham/%ED%88%AC%EB%91%90%EB%A6%AC%EC%8A%A4%ED%8A%B8-6%ED%83%84-%EC%88%98%EC%A0%95-%EA%B8%B0%EB%8A%A5-%EB%A7%8C%EB%93%A4%EA%B8%B0
+  // NOTE https://velog.io/@hamham/%ED%88%AC%EB%91%90%EB%A6%AC%EC%8A%A4%ED%8A%B8-6%ED%83%84-%EC%88%98%EC%A0%95-%EA%B8%B0%EB%8A%A5-%EB%A7%8C%EB%93%A4%EA%B8%B0
   // https://github.com/jiwonmik/Drag-and-Drop-Boards/blob/main/src/components/Board/DraggableBoard.tsx
-  // 오류 : Cannot read properties of undefined (reading 'map')
 
   // form
   const editedTodos = ({ editedText }: FormProps) => {
@@ -113,7 +109,12 @@ function TodoItem({
   const editingTemplate = (
     <form onSubmit={handleSubmit(editedTodos)}>
       <InputBox>
-        <input type="text" {...register('editedText', { required: true })} />
+        <input
+          type="text"
+          {...register('editedText', {
+            required: true,
+          })}
+        />
       </InputBox>
       <div>
         <Button type="button" onClick={() => setEditing((prev) => !prev)}>

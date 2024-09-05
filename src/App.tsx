@@ -9,16 +9,34 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { boardState } from './atoms';
+import BoardCreator from './BoardCreator';
 
-const Wrapper = styled.div`
-  display: flex;
-  max-width: 920px;
+const BoardContainer = styled.div`
   width: 100vw;
-  margin: 0 auto;
-  justify-content: center;
-  align-items: center;
   height: 100vh;
+  background-color: #0d4274;
 `;
+
+const Header = styled.header`
+  padding: 12px 16px;
+  background-color: #00000042;
+  margin-bottom: 20px;
+  h1 {
+    height: 100%;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 32px;
+    color: #fff;
+    padding: 0 10px;
+  }
+`;
+
+const BoardMain = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const Wrapper = styled.div``;
 
 const Boards = styled.div`
   display: flex;
@@ -27,11 +45,6 @@ const Boards = styled.div`
   width: 100%;
   gap: 10px;
 `;
-
-// map 오류일때 useRecoilValueLoadable, useMemo
-// https://velog.io/@alsgur100/React-Recoil-%EB%B9%84%EB%8F%99%EA%B8%B0-%EA%B4%80%EB%A0%A8-Cant-perform-a-React-state-update-on-a-component-that-hasnt-mounted-yet-%EA%B2%BD%EA%B3%A0-%ED%95%B4%EA%B2%B0%ED%95%98%EA%B8%B0
-// https://react-ko.dev/reference/react/useMemo
-// https://recoiljs.org/ko/docs/api-reference/core/useRecoilValueLoadable
 
 function App() {
   const [boardList, setBoardList] = useRecoilState(boardState);
@@ -110,21 +123,29 @@ function App() {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Wrapper>
-        <Boards>
-          {boardList.map((board, index) => (
-            <Board
-              key={board.id}
-              boardIndex={index}
-              boardId={board.id}
-              items={board.items}
-              boardName={board.boardName}
-            />
-          ))}
-        </Boards>
-      </Wrapper>
-    </DragDropContext>
+    <BoardContainer>
+      <Header>
+        <h1>To Do</h1>
+      </Header>
+      <BoardMain>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Wrapper>
+            <Boards>
+              {boardList.map((board, index) => (
+                <Board
+                  key={board.id}
+                  boardIndex={index}
+                  boardId={board.id}
+                  items={board.items}
+                  boardName={board.boardName}
+                />
+              ))}
+            </Boards>
+          </Wrapper>
+          <BoardCreator />
+        </DragDropContext>
+      </BoardMain>
+    </BoardContainer>
   );
 }
 

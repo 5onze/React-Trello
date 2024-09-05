@@ -60,6 +60,19 @@ interface FormProps {
   todo: string;
 }
 
+/** CHECKLIST 투두
+ * [x] 투두 삭제
+ * [x] 투두 수정
+ * [x] 투두 수정
+ * [x] 보드 추가 (+Add 보드 input focus)
+ * [ ] 보드 삭제
+ * [ ] 보드 드래그앤드랍
+ * [ ] 보드 이름 수정
+ * [ ] 로컬 스토리지 저장
+ */
+
+// TODO : 보드 삭제, 보드 이름 변경, 보드 순서, 로컬스토리지 저장
+
 function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   const [todos, setTodos] = useRecoilState(boardState);
   const { register, setValue, handleSubmit } = useForm<FormProps>();
@@ -83,13 +96,13 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
         ...allboards.slice(boardIndex + 1),
       ];
 
-      // [...allboards, newBoard] 는 새로운 보드를 추가한다.
+      // NOTE [...allboards, newBoard] 는 새로운 보드를 추가한다.
       return newBoards;
     });
     setValue('todo', '');
   };
 
-  // TODO: 투두 삭제
+  // 투두 삭제
   const removeTodosHandler = (todoId: number) => {
     setTodos((todos) => {
       const copyBoard = todos[boardIndex]; // "Todo" 보드 복사
