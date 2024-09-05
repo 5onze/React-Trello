@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { boardState, TodoProps } from './atoms';
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import BoardDelete from './BoardDelete';
 
 const Wrapper = styled.div`
   width: 300px;
@@ -18,11 +19,16 @@ const Wrapper = styled.div`
   overflow: hidden;
 `;
 
+const TitleWrap = styled.div`
+  display: flex;
+`;
+
 const Title = styled.h2`
   text-align: center;
   font-weight: 600;
   margin-bottom: 10px;
   font-size: 18px;
+  flex: 1 auto;
 `;
 
 const Area = styled.div<AreaProps>`
@@ -120,7 +126,11 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
 
   return (
     <Wrapper>
-      <Title>{boardName}</Title>
+      <TitleWrap>
+        <Title>{boardName}</Title>
+        <BoardDelete index={boardIndex} />
+      </TitleWrap>
+
       <Form onSubmit={handleSubmit(onAddTodo)}>
         <input
           {...register('todo', { required: true })}
