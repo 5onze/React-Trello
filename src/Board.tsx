@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { boardState, TodoProps } from './atoms';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import BoardDelete from './BoardDelete';
+import BoardEdit from './BoardEdit';
 
 const Wrapper = styled.div`
   width: 300px;
@@ -21,14 +22,6 @@ const Wrapper = styled.div`
 
 const TitleWrap = styled.div`
   display: flex;
-`;
-
-const Title = styled.h2`
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-size: 18px;
-  flex: 1 auto;
 `;
 
 const Area = styled.div<AreaProps>`
@@ -71,13 +64,13 @@ interface FormProps {
  * [x] 투두 수정
  * [x] 투두 수정
  * [x] 보드 추가 (+Add 보드 input focus)
- * [ ] 보드 삭제
+ * [x] 보드 삭제
+ * [x] 보드 이름 수정
  * [ ] 보드 드래그앤드랍
- * [ ] 보드 이름 수정
  * [ ] 로컬 스토리지 저장
  */
 
-// TODO : 보드 삭제, 보드 이름 변경, 보드 순서, 로컬스토리지 저장
+// TODO : 보드 이름 변경, 보드 순서, 로컬스토리지 저장
 
 function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   const [todos, setTodos] = useRecoilState(boardState);
@@ -127,10 +120,8 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   return (
     <Wrapper>
       <TitleWrap>
-        <Title>{boardName}</Title>
-        <BoardDelete index={boardIndex} />
+        <BoardEdit boardName={boardName} index={boardIndex} />
       </TitleWrap>
-
       <Form onSubmit={handleSubmit(onAddTodo)}>
         <input
           {...register('todo', { required: true })}

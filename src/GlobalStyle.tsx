@@ -59,6 +59,11 @@ a {
   text-decoration:none;
   color:inherit;
 }
+
+input, textarea, button {
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
 button {
 	border: 0;
 	background-color: transparent;
