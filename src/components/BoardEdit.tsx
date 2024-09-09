@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import BoardDelete from './BoardDelete';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
-import { boardState, TodoProps } from './atoms';
+import { boardState, TodoProps } from '../atoms';
 
 const EditWrap = styled.div<{ isEditMod: boolean }>`
   display: flex;
@@ -48,7 +48,7 @@ interface FormProps {
 
 /** 보드 이름 수정
  * import : 보드 삭제 컴포넌트
- * TODO 포커스, 블러
+ *
  */
 
 function BoardEdit({ boardName, index }: BoardProps) {

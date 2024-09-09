@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { boardState } from './atoms';
+import { boardState } from '../atoms';
 import { useForm } from 'react-hook-form';
 
 const Card = styled.div<{ isDragging: boolean; isEditMod: boolean }>`
@@ -133,6 +133,7 @@ function TodoItem({
             ref(e);
             todoTextRef.current = e;
           }}
+          onBlur={onBlur}
         />
       </InputBox>
       <div>

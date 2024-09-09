@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { boardState } from './atoms';
+import { boardState } from '../atoms';
 
 const Wrapper = styled.div<{ isCreatingMod: boolean }>`
   margin-left: 10px;

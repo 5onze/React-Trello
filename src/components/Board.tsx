@@ -3,9 +3,8 @@ import TodoItem from './TodoItem';
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { boardState, TodoProps } from './atoms';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import BoardDelete from './BoardDelete';
+import { boardState, TodoProps } from '../atoms';
+import { useRecoilState } from 'recoil';
 import BoardEdit from './BoardEdit';
 
 const Wrapper = styled.div`

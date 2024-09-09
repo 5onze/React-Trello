@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import Board from './Board';
+import Board from './components/Board';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import {
@@ -9,7 +9,7 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { boardState } from './atoms';
-import BoardCreator from './BoardCreator';
+import BoardCreator from './components/BoardCreator';
 
 const BoardContainer = styled.div`
   width: 100vw;

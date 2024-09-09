@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { boardState } from './atoms';
+import { boardState } from '../atoms';
 
 const Button = styled.button`
   width: 36px;
@@ -11,8 +11,6 @@ const Button = styled.button`
 interface boardProps {
   index: number;
 }
-
-// TODO 보드 삭제
 
 function BoardDelete({ index }: boardProps) {
   const setBoards = useSetRecoilState(boardState);
