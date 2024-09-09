@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import TodoItem from './TodoItem';
-import { Droppable } from 'react-beautiful-dnd';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { boardState, TodoProps } from '../atoms';
@@ -117,41 +117,49 @@ function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   };
 
   return (
-    <Wrapper>
-      <TitleWrap>
-        <BoardEdit boardName={boardName} index={boardIndex} />
-      </TitleWrap>
-      <Form onSubmit={handleSubmit(onAddTodo)}>
-        <input
-          {...register('todo', { required: true })}
-          type="text"
-          placeholder={`Add task on ${boardName}`}
-        />
-      </Form>
-      <Droppable droppableId={boardId + ''}>
-        {(provided, snapshot) => (
-          <Area
-            ref={provided.innerRef}
-            isDraggingOver={snapshot.isDraggingOver}
-            isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
-            {...provided.droppableProps}
-          >
-            {items?.map((todoItem, index) => (
-              <TodoItem
-                key={todoItem.id}
-                index={index}
-                todoText={todoItem.text}
-                todoId={todoItem.id}
-                removeTodos={removeTodosHandler}
-                boardIndex={boardIndex}
-              />
-            ))}
-            {provided.placeholder}
-          </Area>
-        )}
-      </Droppable>
-    </Wrapper>
+    <Draggable key={boardId} draggableId={boardId + ''} index={boardIndex}>
+      {(provided) => (
+        <Wrapper
+          ref={provided.innerRef}
+          {...provided.dragHandleProps}
+          {...provided.draggableProps}
+        >
+          <TitleWrap>
+            <BoardEdit boardName={boardName} index={boardIndex} />
+          </TitleWrap>
+          <Form onSubmit={handleSubmit(onAddTodo)}>
+            <input
+              {...register('todo', { required: true })}
+              type="text"
+              placeholder={`Add task on ${boardName}`}
+            />
+          </Form>
+          <Droppable droppableId={boardId + ''}>
+            {(provided, snapshot) => (
+              <Area
+                ref={provided.innerRef}
+                isDraggingOver={snapshot.isDraggingOver}
+                isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
+                {...provided.droppableProps}
+              >
+                {items?.map((todoItem, index) => (
+                  <TodoItem
+                    key={todoItem.id}
+                    index={index}
+                    todoText={todoItem.text}
+                    todoId={todoItem.id}
+                    removeTodos={removeTodosHandler}
+                    boardIndex={boardIndex}
+                  />
+                ))}
+                {provided.placeholder}
+              </Area>
+            )}
+          </Droppable>
+        </Wrapper>
+      )}
+    </Draggable>
   );
 }
 
-export default Board;
+export default React.memo(Board);

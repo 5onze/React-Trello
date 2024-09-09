@@ -9,6 +9,8 @@ const Wrapper = styled.div<{ isCreatingMod: boolean }>`
 `;
 
 const Form = styled.form`
+  display: flex;
+  width: 272px;
   font-size: 14px;
   line-height: 30px;
   input {

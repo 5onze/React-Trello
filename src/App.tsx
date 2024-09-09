@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import Board from './components/Board';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import {
   useRecoilState,
@@ -32,93 +32,115 @@ const Header = styled.header`
 `;
 
 const BoardMain = styled.div`
-  display: flex;
+  display: inline-flex;
   justify-content: center;
 `;
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div<WrapperProps>`
+  width: 100%;
+  height: 100%;
+  padding: 0 0 20px 50px;
+  overflow: auto;
+`;
 
 const Boards = styled.div`
   display: flex;
-  justify-content: center;
   align-items: flex-start;
-  width: 100%;
   gap: 10px;
 `;
+
+interface WrapperProps {
+  isDraggingOver: boolean;
+  isDraggingFromThis: boolean;
+}
 
 function App() {
   const [boardList, setBoardList] = useRecoilState(boardState);
 
   // 드래그 앤 드랍
   const onDragEnd = (info: DropResult) => {
-    const { source, destination, draggableId } = info;
-
+    const { type, source, destination, draggableId } = info;
+    console.log(info);
     if (!destination) return;
 
-    // 같은 보드에서 투두 이동
-    if (destination?.droppableId === source.droppableId) {
+    // board 보드 이동
+    if (type === 'BOARD') {
       setBoardList((allBoards) => {
-        // source.droppableId 앞에 " + "는 number 로 교체하기 위해서 사용
-        const boardIndex = allBoards.findIndex(
-          (board) => board.id === +source.droppableId,
-        );
-
-        // copy
-        const copyBoard = allBoards[boardIndex];
-        const copyItems = [...copyBoard.items]; // 해당 보드의 모든 투두 가져오기
-
-        // splice 원본 배열에서 삭제 (변수에 삭제된 요소가 담김), slice는 원본 복제
-        const copyTodo = copyItems.splice(source.index, 1); // 배열에서 해당 todo를 삭제하고 변수에 todo를 담음
-        copyItems.splice(destination?.index, 0, ...copyTodo); // 원본 배열에서 아무것도 삭제하지 않고 todo를 붙여넣음
-
-        // new board
-        const newBoard = { ...copyBoard, items: copyItems };
-        const newBoards = [
-          ...allBoards.slice(0, boardIndex),
-          newBoard,
-          ...allBoards.slice(boardIndex + 1),
-        ];
+        const newBoards = [...allBoards];
+        const copyBoard = newBoards.splice(source.index, 1);
+        newBoards.splice(destination?.index, 0, ...copyBoard);
         return newBoards;
       });
     }
-    // 다른 보드에서 이동
-    if (destination?.droppableId !== source.droppableId) {
-      setBoardList((allBoards) => {
-        // find boardIndex
-        const srcBoardIndex = allBoards.findIndex(
-          (board) => board.id === +source.droppableId,
-        );
-        const destBaordIndex = allBoards.findIndex(
-          (board) => board.id === +destination.droppableId,
-        );
-        // copy
-        const srcCopyBoard = allBoards[srcBoardIndex];
-        const destCopyBoard = allBoards[destBaordIndex];
-        const srcCopyItems = [...srcCopyBoard.items]; //시작 보드의 해당 todo
-        const destCopyItems = [...destCopyBoard.items]; // 드래그한 보드에 이동한 todo
 
-        // edit
-        const copyTodo = srcCopyItems.splice(source.index, 1);
-        destCopyItems.splice(destination?.index, 0, ...copyTodo);
+    // todo 투두 이동
+    else {
+      // 같은 보드에서 투두 이동
+      if (destination?.droppableId === source.droppableId) {
+        setBoardList((allBoards) => {
+          // source.droppableId 앞에 " + "는 number 로 교체하기 위해서 사용
+          const boardIndex = allBoards.findIndex(
+            (board) => board.id === +source.droppableId,
+          );
 
-        // new board
-        const srcNewBoard = { ...srcCopyBoard, items: srcCopyItems };
-        const destNewBoard = { ...destCopyBoard, items: destCopyItems };
+          // copy
+          const copyBoard = allBoards[boardIndex];
+          const copyItems = [...copyBoard.items]; // 해당 보드의 모든 투두 가져오기
 
-        const srcNewBoards = [
-          ...allBoards.slice(0, srcBoardIndex),
-          srcNewBoard,
-          ...allBoards.slice(srcBoardIndex + 1),
-        ];
+          // splice 원본 배열에서 삭제 (변수에 삭제된 요소가 담김), slice는 원본 복제
+          const copyTodo = copyItems.splice(source.index, 1); // 배열에서 해당 todo를 삭제하고 변수에 todo를 담음
+          copyItems.splice(destination?.index, 0, ...copyTodo); // 원본 배열에서 아무것도 삭제하지 않고 todo를 붙여넣음
 
-        const resultNewBoards = [
-          ...srcNewBoards.slice(0, destBaordIndex),
-          destNewBoard,
-          ...srcNewBoards.slice(destBaordIndex + 1),
-        ];
+          // new board
+          const newBoard = { ...copyBoard, items: copyItems };
+          const newBoards = [
+            ...allBoards.slice(0, boardIndex),
+            newBoard,
+            ...allBoards.slice(boardIndex + 1),
+          ];
+          return newBoards;
+        });
+      }
 
-        return resultNewBoards;
-      });
+      // 다른 보드에서 이동
+      if (destination?.droppableId !== source.droppableId) {
+        setBoardList((allBoards) => {
+          // find boardIndex
+          const srcBoardIndex = allBoards.findIndex(
+            (board) => board.id === +source.droppableId,
+          );
+          const destBaordIndex = allBoards.findIndex(
+            (board) => board.id === +destination.droppableId,
+          );
+          // copy
+          const srcCopyBoard = allBoards[srcBoardIndex];
+          const destCopyBoard = allBoards[destBaordIndex];
+          const srcCopyItems = [...srcCopyBoard.items]; //시작 보드의 해당 todo
+          const destCopyItems = [...destCopyBoard.items]; // 드래그한 보드에 이동한 todo
+
+          // edit
+          const copyTodo = srcCopyItems.splice(source.index, 1);
+          destCopyItems.splice(destination?.index, 0, ...copyTodo);
+
+          // new board
+          const srcNewBoard = { ...srcCopyBoard, items: srcCopyItems };
+          const destNewBoard = { ...destCopyBoard, items: destCopyItems };
+
+          const srcNewBoards = [
+            ...allBoards.slice(0, srcBoardIndex),
+            srcNewBoard,
+            ...allBoards.slice(srcBoardIndex + 1),
+          ];
+
+          const resultNewBoards = [
+            ...srcNewBoards.slice(0, destBaordIndex),
+            destNewBoard,
+            ...srcNewBoards.slice(destBaordIndex + 1),
+          ];
+
+          return resultNewBoards;
+        });
+      }
     }
   };
 
@@ -129,19 +151,29 @@ function App() {
       </Header>
       <BoardMain>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Wrapper>
-            <Boards>
-              {boardList.map((board, index) => (
-                <Board
-                  key={board.id}
-                  boardIndex={index}
-                  boardId={board.id}
-                  items={board.items}
-                  boardName={board.boardName}
-                />
-              ))}
-            </Boards>
-          </Wrapper>
+          <Droppable droppableId="Board" type="BOARD" direction="horizontal">
+            {(provided, snapshot) => (
+              <Wrapper
+                ref={provided.innerRef}
+                isDraggingOver={snapshot.isDraggingOver}
+                isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
+                {...provided.droppableProps}
+              >
+                <Boards>
+                  {boardList.map((board, index) => (
+                    <Board
+                      key={board.id}
+                      boardIndex={index}
+                      boardId={board.id}
+                      boardName={board.boardName}
+                      items={board.items}
+                    />
+                  ))}
+                </Boards>
+                {provided.placeholder}
+              </Wrapper>
+            )}
+          </Droppable>
           <BoardCreator />
         </DragDropContext>
       </BoardMain>

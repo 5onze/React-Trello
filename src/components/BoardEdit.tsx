@@ -98,7 +98,6 @@ function BoardEdit({ boardName, index }: BoardProps) {
         onBlur={onBlur}
         ref={(e) => {
           ref(e);
-          console.log(ref);
           inputRef.current = e;
         }}
       />
