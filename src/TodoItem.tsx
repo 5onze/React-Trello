@@ -50,6 +50,13 @@ interface FormProps {
   editedText: string;
 }
 
+/** 투두 카드
+ * DONE todo 포커스, 블러, 텍스트 클릭 수정
+ */
+
+// NOTE https://velog.io/@hamham/%ED%88%AC%EB%91%90%EB%A6%AC%EC%8A%A4%ED%8A%B8-6%ED%83%84-%EC%88%98%EC%A0%95-%EA%B8%B0%EB%8A%A5-%EB%A7%8C%EB%93%A4%EA%B8%B0
+// https://github.com/jiwonmik/Drag-and-Drop-Boards/blob/main/src/components/Board/DraggableBoard.tsx
+
 function TodoItem({
   todoText,
   todoId,
@@ -59,12 +66,14 @@ function TodoItem({
 }: TodoItemProps) {
   const [boards, setBoards] = useRecoilState(boardState);
   const [isEditing, setEditing] = useState(false);
+  const todoTextRef = useRef<HTMLInputElement | null>(null);
 
   // Form 이벤트
-  const { register, setValue, handleSubmit } = useForm<FormProps>();
-
-  // NOTE https://velog.io/@hamham/%ED%88%AC%EB%91%90%EB%A6%AC%EC%8A%A4%ED%8A%B8-6%ED%83%84-%EC%88%98%EC%A0%95-%EA%B8%B0%EB%8A%A5-%EB%A7%8C%EB%93%A4%EA%B8%B0
-  // https://github.com/jiwonmik/Drag-and-Drop-Boards/blob/main/src/components/Board/DraggableBoard.tsx
+  const { register, handleSubmit } = useForm<FormProps>({
+    defaultValues: {
+      editedText: todoText,
+    },
+  });
 
   // form
   const editedTodos = ({ editedText }: FormProps) => {
@@ -102,8 +111,16 @@ function TodoItem({
       setEditing(false);
       return newBoards;
     });
-    setValue('editedText', '');
   };
+
+  const { ref, onBlur, ...rest } = register('editedText', {
+    required: true,
+    onBlur: () => setEditing(false),
+  });
+
+  useEffect(() => {
+    if (isEditing) todoTextRef.current?.focus();
+  }, [isEditing, todoTextRef]);
 
   // 템플릿
   const editingTemplate = (
@@ -111,9 +128,11 @@ function TodoItem({
       <InputBox>
         <input
           type="text"
-          {...register('editedText', {
-            required: true,
-          })}
+          {...rest}
+          ref={(e) => {
+            ref(e);
+            todoTextRef.current = e;
+          }}
         />
       </InputBox>
       <div>
@@ -127,7 +146,9 @@ function TodoItem({
 
   const viewTemplate = (
     <div>
-      <InputBox>{todoText}</InputBox>
+      <InputBox onClick={() => setEditing((prev) => !prev)}>
+        {todoText}
+      </InputBox>
       <div>
         <Button onClick={() => setEditing((prev) => !prev)}>편집</Button>
         <Button onClick={() => removeTodos(todoId)}>삭제</Button>

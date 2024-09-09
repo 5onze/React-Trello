@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import BoardDelete from './BoardDelete';
 import { useForm } from 'react-hook-form';
@@ -18,10 +18,10 @@ const BoardNameInput = styled.input`
   font-size: 18px;
   text-align: center;
   background: none;
-  border-radius: 5px;
-  border: 2px solid #fff;
   box-sizing: border-box;
   padding: 0px 6px 0px 30px;
+  border-radius: 8px;
+  border: 2px solid #fff;
 `;
 
 const Title = styled.h2`
@@ -46,13 +46,16 @@ interface FormProps {
   board: string;
 }
 
-// 보드 이름 수정
-// NOTE 보드 삭제 import
+/** 보드 이름 수정
+ * import : 보드 삭제 컴포넌트
+ * TODO 포커스, 블러
+ */
 
 function BoardEdit({ boardName, index }: BoardProps) {
   const setBoards = useSetRecoilState(boardState);
   const [isEditing, setEditing] = useState(false);
-  const { register, handleSubmit } = useForm<FormProps>({
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const { register, handleSubmit, setFocus } = useForm<FormProps>({
     defaultValues: {
       board: boardName,
     },
@@ -76,10 +79,29 @@ function BoardEdit({ boardName, index }: BoardProps) {
     setEditing(false);
   };
 
+  const { onBlur, ref, ...rest } = register('board', {
+    required: true,
+    onBlur: () => setEditing(false),
+  });
+
+  useEffect(() => {
+    // Add board input focus
+    if (isEditing) inputRef.current?.focus();
+  }, [isEditing, inputRef]);
+
   // template
   const editingTemplate = (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <BoardNameInput {...register('board', { required: true })} type="text" />
+      <BoardNameInput
+        {...rest}
+        type="text"
+        onBlur={onBlur}
+        ref={(e) => {
+          ref(e);
+          console.log(ref);
+          inputRef.current = e;
+        }}
+      />
       <CancelBtn type="button" onClick={() => setEditing((prev) => !prev)}>
         취소
       </CancelBtn>

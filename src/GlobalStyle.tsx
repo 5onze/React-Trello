@@ -64,6 +64,10 @@ input, textarea, button {
 	font-family: 'Source Sans Pro', sans-serif;
 }
 
+input {
+	outline: none;
+}
+
 button {
 	border: 0;
 	background-color: transparent;

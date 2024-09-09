@@ -62,7 +62,7 @@ interface FormProps {
 /** CHECKLIST 투두
  * [x] 투두 삭제
  * [x] 투두 수정
- * [x] 투두 수정
+ * [x] 투두 수정 (포커서, 블러, 텍스트 클릭)
  * [x] 보드 추가 (+Add 보드 input focus)
  * [x] 보드 삭제
  * [x] 보드 이름 수정
@@ -70,7 +70,7 @@ interface FormProps {
  * [ ] 로컬 스토리지 저장
  */
 
-// TODO : 보드 이름 변경, 보드 순서, 로컬스토리지 저장
+// TODO : 보드 순서, 로컬스토리지 저장
 
 function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   const [todos, setTodos] = useRecoilState(boardState);

@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -75,6 +69,7 @@ function BoardCreator() {
     formState: { errors },
   } = useForm<propsType>();
 
+  const formrRef = useRef<HTMLFormElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -99,16 +94,32 @@ function BoardCreator() {
   };
 
   // ref
-  const { ref, ...rest } = register('AddBoard', { required: true });
+  const { ref, ...rest } = register('AddBoard', {
+    required: true,
+  });
 
   useEffect(() => {
     // Add board input focus
     if (isCreating) inputRef.current?.focus();
+
+    // mousedown event
+    const clickOutside = (e: Event) => {
+      const target = e.target as HTMLFormElement;
+      if (isCreating && !formrRef.current?.contains(target)) {
+        setIsCreating(false);
+      }
+    };
+
+    document.addEventListener('mousedown', clickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', clickOutside);
+    };
   }, [isCreating, inputRef]);
 
   // 템플릿
   const creatingTemplate = (
-    <Form onSubmit={handleSubmit(onValid)}>
+    <Form onSubmit={handleSubmit(onValid)} ref={formrRef}>
       <input
         type="text"
         {...rest}
