@@ -65,11 +65,11 @@ interface FormProps {
  * [x] 보드 추가 (+Add 보드 input focus)
  * [x] 보드 삭제
  * [x] 보드 이름 수정
- * [ ] 보드 드래그앤드랍
- * [ ] 로컬 스토리지 저장
+ * [x] 보드 드래그앤드랍
+ * [x] 로컬 스토리지 저장
  */
 
-// TODO : 보드 순서, 로컬스토리지 저장
+// TODO : 로컬스토리지 저장
 
 function Board({ boardId, boardIndex, boardName, items }: BoardProps) {
   const [todos, setTodos] = useRecoilState(boardState);
